@@ -1,16 +1,14 @@
-"""
-Knoco Configuration File for connecting mem0 to Supabase
-"""
+# Knoco Configuration File for connecting mem0 to Supabase
 
 from mem0 import Memory
 from mem0.configs.base import MemoryConfig
 
 # Supabase configuration
 supabase_config = {
-    "connection_string": "postgresql://postgres.wwgqkuoqcqopdivsvqvw:*L6iDSUt2KJT5tdy@aws-0-eu-central-1.pooler.supabase.com:6543/postgres",
+    "connection_string": "YOUR_SUPABASE_CONNECTION_STRING",  # Replace with your actual connection string
     "collection_name": "knoco_memories",
     "embedding_model_dims": 1536,  # Default for OpenAI embeddings
-    "index_method": "ivfflat",     # Use IVF Flat index for better performance with large collections
+    "index_method": "hnsw",        # Using hnsw which requires less memory than ivfflat
     "index_measure": "cosine_distance"  # Use cosine distance for similarity comparison
 }
 
@@ -57,34 +55,31 @@ memory_config = MemoryConfig(
     6. REFERENCES: Important documents, sources, or best practices mentioned
     7. LEARNINGS: Insights or lessons that could be applied to future work
 
-    For each memory you identify, extract:
-    - The specific type from the list above
-    - The core content as a clear, concise statement
-    - Relevant metadata about the memory (people involved, project name, importance, etc.)
-    - Your confidence level in this extraction (0.0-1.0)
+    For each memory you identify, extract the core content as a clear, concise statement.
+    Include the type of information (e.g., DECISION, ACTION) at the beginning of each statement.
 
-    If you don't find any relevant information to extract, return an empty array: {"facts": []}
+    If you don't find any relevant information to extract, return an empty array: {\"facts\": []}
 
     For example:
     Input: We decided to use AWS instead of Azure for the cloud infrastructure because of the client's existing AWS expertise.
-    Output: {"facts": ["The team decided to use AWS over Azure for cloud infrastructure due to client's existing AWS expertise."]}
+    Output: {\"facts\": [\"DECISION: The team decided to use AWS over Azure for cloud infrastructure due to client's existing AWS expertise.\"]}
 
     Input: The client mentioned they need the final report by next Friday and it must include a detailed cost breakdown.
-    Output: {"facts": ["Client requires final report by next Friday with detailed cost breakdown."]}
+    Output: {\"facts\": [\"CLIENT_CONTEXT: Client requires final report by next Friday with detailed cost breakdown.\"]}
 
-    Format your response as a JSON object with a "facts" array containing the extracted information.
+    Format your response as a JSON object with a \"facts\" array containing strings.
 
     Here are some few shot examples:
     Input: We should probably schedule a meeting with the finance team to discuss budget implications.
-    Output: {"facts": [{"type": "ACTION", "content": "Schedule a meeting with finance team to discuss budget implications", "metadata": {"priority": "medium", "department": "finance"}, "confidence": 0.9}]}
+    Output: {\"facts\": [\"ACTION: Schedule a meeting with finance team to discuss budget implications.\"]}
 
     Input: The client doesn't like our proposed solution because they had a negative experience with a similar approach last year.
-    Output: {"facts": [{"type": "CLIENT_CONTEXT", "content": "Client dislikes proposed solution due to negative experience with similar approach last year", "metadata": {"sentiment": "negative", "experience": "historical"}, "confidence": 0.95}]}
+    Output: {\"facts\": [\"CLIENT_CONTEXT: Client dislikes proposed solution due to negative experience with similar approach last year.\"]}
 
     Input: After analyzing three options, we've decided to implement the microservice architecture because it offers better scalability and maintainability.
-    Output: {"facts": [{"type": "DECISION", "content": "Implement microservice architecture", "metadata": {"alternatives": "three options", "rationale": "better scalability and maintainability"}, "confidence": 0.98}]}
+    Output: {\"facts\": [\"DECISION: Implement microservice architecture because it offers better scalability and maintainability.\"]}
 
-    Return the facts in a json format as shown above.
+    IMPORTANT: Return the facts as simple strings in an array, not as complex objects. The format must be exactly as shown in the examples above.
     """,
     
     # Set the API version to the latest
@@ -97,7 +92,7 @@ def create_memory():
 
 # Example usage
 if __name__ == "__main__":
-    # Replace with your actual OpenAI API key
+    # Set your OpenAI API key in the environment variable
     import os
     os.environ["OPENAI_API_KEY"] = "your-api-key-here"
     
